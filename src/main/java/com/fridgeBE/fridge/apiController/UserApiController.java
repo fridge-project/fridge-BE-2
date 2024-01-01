@@ -8,6 +8,7 @@ import com.fridgeBE.fridge.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import static com.fridgeBE.fridge.model.AccountType.SELF;
@@ -34,28 +35,14 @@ public class UserApiController {
         return new ResponseDto<Integer>(HttpStatus.UNAUTHORIZED.value(), 0); // 회원가입 실패(401)
     }
 
-    @PostMapping("/login") // 로그인
-    public ResponseDto<Integer> login(@RequestBody User user) {
-        user.setAccount(SELF);
-        User principal = userService.login(user);
-
-        if(principal != null) {
-            session.setAttribute("principal", principal);
-            return new ResponseDto<Integer>(HttpStatus.OK.value(), principal.getId()); // 로그인 성공(200)
-        }
-        else {
-            boolean idExist = userService.idCheck(user);
-            if(idExist) return new ResponseDto<Integer>(HttpStatus.UNAUTHORIZED.value(), 10); // id/pw 오류
-            else return new ResponseDto<Integer>(HttpStatus.UNAUTHORIZED.value(), 0); // id 존재x
-        }
-    }
-
-    @PostMapping("/loginJwt") // 로그인
-    public ResponseDto<Integer> loginJwt(@RequestBody User user) {
-
-        // 로그인 구현 하기 ~~
+    @PostMapping("/login") // jwt 로그인
+    public ResponseDto login(@RequestBody User user) {
 
         user.setAccount(SELF);
+        if(!userService.idCheck(user)) return new ResponseDto<Integer>(HttpStatus.UNAUTHORIZED.value(), 0); // id 존재x
+
+        user.setId(userService.login(user));
+        if(user.getId() == -1) return new ResponseDto<Integer>(HttpStatus.UNAUTHORIZED.value(), 10); // id/pw 오류
 
         String accessToken = jwtTokenizer.createAccessToken(user.getId(), user.getEmail());
         String refreshToken = jwtTokenizer.createRefreshToken(user.getId(), user.getEmail());
@@ -66,10 +53,7 @@ public class UserApiController {
                 .userId(user.getId())
                 .build();
 
-
-        boolean idExist = userService.idCheck(user);
-        if(idExist) return new ResponseDto<Integer>(HttpStatus.UNAUTHORIZED.value(), 10); // id/pw 오류
-        else return new ResponseDto<Integer>(HttpStatus.UNAUTHORIZED.value(), 0); // id 존재x
+        return new ResponseDto<UserLoginResponseDto>(HttpStatus.OK.value(), loginResponse);
     }
 
     @PostMapping("/logout") // 로그아웃
