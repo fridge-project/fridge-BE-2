@@ -1,6 +1,7 @@
 package com.fridgeBE.fridge.apiController;
 
 
+import com.fridgeBE.fridge.dto.AddIngredientDto;
 import com.fridgeBE.fridge.dto.ResponseDto;
 import com.fridgeBE.fridge.model.Fridge;
 import com.fridgeBE.fridge.model.Ingredient;
@@ -8,6 +9,7 @@ import com.fridgeBE.fridge.model.StorageType;
 import com.fridgeBE.fridge.model.User;
 import com.fridgeBE.fridge.service.FridgeService;
 import com.fridgeBE.fridge.service.IngredientService;
+import com.fridgeBE.fridge.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import lombok.AllArgsConstructor;
 
@@ -28,6 +30,9 @@ public class FridgeApiController {
     private IngredientService ingredientService;
 
     @Autowired
+    private UserService userService;
+
+    @Autowired
     private HttpSession session;
 
     @NoArgsConstructor
@@ -41,16 +46,16 @@ public class FridgeApiController {
     }
 
     @PostMapping("/fridge") // 재료 등록
-    public ResponseDto<Integer> addIngredients(@RequestBody RequestIngre requestIngre) {
+    public ResponseDto<Integer> addIngredients(@RequestBody AddIngredientDto addIngredientDto) {
         Fridge fridge = new Fridge();
-        fridge.setExp(requestIngre.getExp());
-        fridge.setMemo(requestIngre.getMemo());
-        fridge.setStorage(StorageType.valueOf(requestIngre.getStorage()));
+        fridge.setExp(addIngredientDto.getExp());
+        fridge.setMemo(addIngredientDto.getMemo());
+        fridge.setStorage(StorageType.valueOf(addIngredientDto.getStorage()));
 
-        Ingredient ingredient = ingredientService.getIngredient(requestIngre.getName());
+        Ingredient ingredient = ingredientService.getIngredient(addIngredientDto.getName());
         fridge.setIngredient(ingredient);
 
-        User user = (User)(session.getAttribute("principal"));
+        User user = userService.getUser(addIngredientDto.getUserId());
 
         // 1. 재료가 있나?
 //        boolean exist = fridgeService.isExist(user.getId(), ingredient.getId());

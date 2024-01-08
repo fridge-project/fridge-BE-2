@@ -34,4 +34,8 @@ public class UserService {
         else return false;
     }
 
+    @Transactional(readOnly = true) // user정보 가져오기
+    public User getUser(int userId) {
+        return userRepository.findById(userId);
+    }
 }
