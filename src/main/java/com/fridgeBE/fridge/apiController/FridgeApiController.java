@@ -11,10 +11,8 @@ import com.fridgeBE.fridge.service.FridgeService;
 import com.fridgeBE.fridge.service.IngredientService;
 import com.fridgeBE.fridge.service.UserService;
 import jakarta.servlet.http.HttpSession;
-import lombok.AllArgsConstructor;
+import lombok.*;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -72,12 +70,18 @@ public class FridgeApiController {
         return new ResponseDto<Integer>(HttpStatus.OK.value(), 1);
     }
 
-    @GetMapping("/fridge") // 보유 재료 확인
-    public ResponseDto<List<Fridge>> getIngredients() {
-        User user = (User)(session.getAttribute("principal"));
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public class GetUserId { // 오류
+        private int userId;
+    }
 
+    @PostMapping("/getFridge") // 보유 재료 확인
+    public ResponseDto<List<Fridge>> getIngredients(@RequestBody GetUserId getUserId) {
+        User user = userService.getUser(getUserId.userId);
 
-        List<Fridge> data = fridgeService.getIngredient(user);
+        List<Fridge> data = fridgeService.getIngredient(user); // 오류 , 다시!!
 
         return new ResponseDto<List<Fridge>>(HttpStatus.OK.value(), data);
     }
