@@ -2,6 +2,7 @@ package com.fridgeBE.fridge.apiController;
 
 
 import com.fridgeBE.fridge.dto.AddIngredientDto;
+import com.fridgeBE.fridge.dto.RequestWithUseridDto;
 import com.fridgeBE.fridge.dto.ResponseDto;
 import com.fridgeBE.fridge.model.Fridge;
 import com.fridgeBE.fridge.model.Ingredient;
@@ -70,18 +71,11 @@ public class FridgeApiController {
         return new ResponseDto<Integer>(HttpStatus.OK.value(), 1);
     }
 
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public class GetUserId { // 오류
-        private int userId;
-    }
-
     @PostMapping("/getFridge") // 보유 재료 확인
-    public ResponseDto<List<Fridge>> getIngredients(@RequestBody GetUserId getUserId) {
-        User user = userService.getUser(getUserId.userId);
+    public ResponseDto<List<Fridge>> getIngredients(@RequestBody RequestWithUseridDto request) {
+        User user = userService.getUser(request.getUserId());
 
-        List<Fridge> data = fridgeService.getIngredient(user); // 오류 , 다시!!
+        List<Fridge> data = fridgeService.getIngredient(user);
 
         return new ResponseDto<List<Fridge>>(HttpStatus.OK.value(), data);
     }
