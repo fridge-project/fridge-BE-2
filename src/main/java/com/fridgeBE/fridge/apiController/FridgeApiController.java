@@ -3,6 +3,7 @@ package com.fridgeBE.fridge.apiController;
 
 import com.fridgeBE.fridge.dto.AddIngredientDto;
 import com.fridgeBE.fridge.dto.RequestWithUseridDto;
+import com.fridgeBE.fridge.dto.ResIngreDto;
 import com.fridgeBE.fridge.dto.ResponseDto;
 import com.fridgeBE.fridge.model.Fridge;
 import com.fridgeBE.fridge.model.Ingredient;
