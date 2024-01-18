@@ -1,10 +1,7 @@
 package com.fridgeBE.fridge.service;
 
 
-import com.fridgeBE.fridge.model.Fridge;
-import com.fridgeBE.fridge.model.FridgeId;
-import com.fridgeBE.fridge.model.Ingredient;
-import com.fridgeBE.fridge.model.User;
+import com.fridgeBE.fridge.model.*;
 import com.fridgeBE.fridge.repository.FridgeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,10 +27,17 @@ public class FridgeService {
     }
 
     @Transactional
-    public List<Fridge> getIngredient(User user) {
+    public List<ResFridge> getIngredient(User user) {
 
-        List<Fridge> res = fridgeRepository.findByUserId(user.getId());
+        List<ResFridge> res = fridgeRepository.findByUserId(user.getId());
 
         return fridgeRepository.findByUserId(user.getId());
     }
+
+    @Transactional
+    public void delIngredient(int user_id, int ingre_id) {
+//        fridgeRepository.delIngredients(user_id, ingre_id);
+        fridgeRepository.deleteById(new FridgeId(user_id, ingre_id));
+    }
+
 }
