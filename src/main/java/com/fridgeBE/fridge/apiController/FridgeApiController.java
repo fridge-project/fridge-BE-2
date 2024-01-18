@@ -4,13 +4,11 @@ package com.fridgeBE.fridge.apiController;
 import com.fridgeBE.fridge.dto.AddIngredientDto;
 import com.fridgeBE.fridge.dto.RequestWithUseridDto;
 import com.fridgeBE.fridge.dto.ResponseDto;
-import com.fridgeBE.fridge.model.Fridge;
-import com.fridgeBE.fridge.model.Ingredient;
-import com.fridgeBE.fridge.model.StorageType;
-import com.fridgeBE.fridge.model.User;
+import com.fridgeBE.fridge.model.*;
 import com.fridgeBE.fridge.service.FridgeService;
 import com.fridgeBE.fridge.service.IngredientService;
 import com.fridgeBE.fridge.service.UserService;
+import jakarta.persistence.*;
 import jakarta.servlet.http.HttpSession;
 import lombok.*;
 
@@ -18,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -72,12 +71,20 @@ public class FridgeApiController {
     }
 
     @PostMapping("/getFridge") // 보유 재료 확인
-    public ResponseDto<List<Fridge>> getIngredients(@RequestBody RequestWithUseridDto request) {
+    public ResponseDto<List<ResFridge>> getIngredients(@RequestBody RequestWithUseridDto request) {
         User user = userService.getUser(request.getUserId());
 
-        List<Fridge> data = fridgeService.getIngredient(user);
+        List<ResFridge> data = fridgeService.getIngredient(user);
 
-        return new ResponseDto<List<Fridge>>(HttpStatus.OK.value(), data);
+        return new ResponseDto<List<ResFridge>>(HttpStatus.OK.value(), data);
+    }
+
+    @PostMapping("/delFridge") // 보유 재료 삭제
+    public ResponseDto<Integer> delIngredients(@RequestBody RequestWithUseridDto<Integer> request) {
+        fridgeService.delIngredient(request.getUserId(), request.getData());
+
+        return new ResponseDto<Integer>(
+                HttpStatus.OK.value(), 1);
     }
 
 }
